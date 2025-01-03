@@ -5,12 +5,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_tts/flutter_tts.dart';
+import 'package:http/http.dart' as http;
 import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
-import 'package:http/http.dart' as http;
+import 'package:speech_to_text/speech_to_text.dart'
+    as stt;
 
 import 'camera_screen.dart';
 import 'history_screen.dart';
@@ -20,27 +19,39 @@ class TranslatorScreen extends StatefulWidget {
   const TranslatorScreen({super.key});
 
   @override
-  State<TranslatorScreen> createState() => _TranslatorScreenState();
+  State<TranslatorScreen> createState() =>
+      _TranslatorScreenState();
 }
 
-class _TranslatorScreenState extends State<TranslatorScreen> {
-  String _sourceLanguage = 'en'; // Default source language
-  String _targetLanguage = 'es'; // Default target language
-  final TextEditingController _textController = TextEditingController();
-  String _translatedText = ''; // Stores the translated text
-  bool _isListening = false; // Speech-to-text status
-  List<String> _favorites = []; // List of favorite translations
-  int _selectedIndex = 0; // Bottom navigation bar index
+class _TranslatorScreenState
+    extends State<TranslatorScreen> {
+  final String _apiKey =
+      'AIzaSyDdvd0KEeUv222k0Rgh-bcxxeW-VU5c5I4';
+
+  String _sourceLanguage =
+      'en'; // Default source language
+  String _targetLanguage =
+      'es'; // Default target language
+  final TextEditingController _textController =
+      TextEditingController();
+  String _translatedText =
+      ''; // Stores the translated text
+  bool _isListening =
+      false; // Speech-to-text status
+  List<String> _favorites =
+      []; // List of favorite translations
+  int _selectedIndex =
+      0; // Bottom navigation bar index
 
   // API and Speech instances
-  late FlutterTts flutterTts;
+  // late FlutterTts flutterTts;
   late stt.SpeechToText _speech;
-  final String _apiKey = dotenv.env['API_KEY']!;
+  // final String _apiKey = API_KEY;
 
   @override
   void initState() {
     super.initState();
-    flutterTts = FlutterTts();
+    // flutterTts = FlutterTts();
     _speech = stt.SpeechToText();
     _loadFavorites(); // Load saved favorites on start
   }
@@ -56,7 +67,9 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
     try {
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: json.encode({
           'q': inputText,
           'source': _sourceLanguage,
@@ -67,39 +80,48 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final translatedText =
-            data['data']['translations'][0]['translatedText'];
+        final translatedText = data['data']
+            ['translations'][0]['translatedText'];
         setState(() {
           _translatedText = translatedText;
-          _addToHistory(translatedText); // Save translation to history
+          _addToHistory(
+              translatedText); // Save translation to history
         });
       } else {
-        stderr.write("Translation Error: ${response.body}");
-        throw Exception('Failed to load translation');
+        stderr.write(
+            "Translation Error: ${response.body}");
+        throw Exception(
+            'Failed to load translation');
       }
     } catch (error) {
-      stderr.write("Error in translation: $error");
+      stderr
+          .write("Error in translation: $error");
     }
   }
 
   // Method to save translation to history
-  Future<void> _addToHistory(String translation) async {
-    final prefs = await SharedPreferences.getInstance();
-    List<String> history = prefs.getStringList('history') ?? [];
+  Future<void> _addToHistory(
+      String translation) async {
+    final prefs =
+        await SharedPreferences.getInstance();
+    List<String> history =
+        prefs.getStringList('history') ?? [];
     history.add(translation);
     await prefs.setStringList('history', history);
   }
 
   // Method to handle Text-to-Speech pronunciation
-  Future<void> _speak() async {
-    if (_translatedText.isNotEmpty) {
-      await flutterTts.speak(_translatedText);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Nothing to pronounce')),
-      );
-    }
-  }
+  // Future<void> _speak() async {
+  //   if (_translatedText.isNotEmpty) {
+  //     await flutterTts.speak(_translatedText);
+  //   } else {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(
+  //           content:
+  //               Text('Nothing to pronounce')),
+  //     );
+  //   }
+  // }
 
   // Method to save translation to favorites
   Future<void> _saveToFavorites() async {
@@ -107,12 +129,18 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
       if (!_favorites.contains(_translatedText)) {
         _favorites.add(_translatedText);
         _saveFavorites();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Added to favorites')),
+        ScaffoldMessenger.of(context)
+            .showSnackBar(
+          const SnackBar(
+              content:
+                  Text('Added to favorites')),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Already in favorites')),
+        ScaffoldMessenger.of(context)
+            .showSnackBar(
+          const SnackBar(
+              content:
+                  Text('Already in favorites')),
         );
       }
     });
@@ -120,15 +148,19 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
 
   // Method to save favorites list to SharedPreferences
   Future<void> _saveFavorites() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('favorites', _favorites);
+    final prefs =
+        await SharedPreferences.getInstance();
+    await prefs.setStringList(
+        'favorites', _favorites);
   }
 
   // Method to load favorites list from SharedPreferences
   Future<void> _loadFavorites() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs =
+        await SharedPreferences.getInstance();
     setState(() {
-      _favorites = prefs.getStringList('favorites') ?? [];
+      _favorites =
+          prefs.getStringList('favorites') ?? [];
     });
   }
 
@@ -139,7 +171,8 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
       setState(() => _isListening = true);
       _speech.listen(onResult: (result) {
         setState(() {
-          _textController.text = result.recognizedWords;
+          _textController.text =
+              result.recognizedWords;
         });
       });
     }
@@ -152,20 +185,24 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
 
   // Method to copy translated text
   void _copyToClipboard() {
-    Clipboard.setData(ClipboardData(text: _translatedText));
+    Clipboard.setData(
+        ClipboardData(text: _translatedText));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Copied to clipboard')),
+      const SnackBar(
+          content: Text('Copied to clipboard')),
     );
   }
 
   // Method to share translated text using native share dialog
   void _shareText() {
     if (_translatedText.isNotEmpty) {
-      Share.share(_translatedText, subject: 'Translation Result');
+      Share.share(_translatedText,
+          subject: 'Translation Result');
     } else {
       // Show a snack bar if there's no text to share
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No text to share')),
+        const SnackBar(
+            content: Text('No text to share')),
       );
     }
   }
@@ -204,7 +241,8 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
         ),
         title: const Text(
           'DALA',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+              fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         actions: const [
@@ -213,7 +251,8 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
             child: CircleAvatar(
               backgroundImage: AssetImage(
                   'assets/profile/johnson.jpg'), // Profile picture asset
-              radius: 18, // Size of profile picture
+              radius:
+                  18, // Size of profile picture
             ),
           ),
         ],
@@ -224,16 +263,23 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(
-              icon: Icon(Icons.translate), label: 'Translate'),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
+              icon: Icon(Icons.translate),
+              label: 'Translate'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.camera_alt), label: 'Camera'),
+              icon: Icon(Icons.history),
+              label: 'History'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.settings), label: 'Settings'),
+              icon: Icon(Icons.camera_alt),
+              label: 'Camera'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.settings),
+              label: 'Settings'),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue, // Color for the selected icon and label
-        unselectedItemColor: Colors.grey, // Color for unselected items
+        selectedItemColor: Colors
+            .blue, // Color for the selected icon and label
+        unselectedItemColor: Colors
+            .grey, // Color for unselected items
         onTap: _onItemTapped,
       ),
     );
@@ -243,30 +289,49 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment:
+            CrossAxisAlignment.stretch,
         children: [
           // Language Selector Row
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment:
+                MainAxisAlignment.spaceBetween,
             children: [
               // Source Language Dropdown
               Expanded(
-                child: DropdownButtonFormField<String>(
+                child: DropdownButtonFormField<
+                    String>(
                   value: _sourceLanguage,
                   onChanged: (String? newValue) {
                     setState(() {
                       _sourceLanguage = newValue!;
                     });
                   },
-                  decoration: const InputDecoration(labelText: 'From'),
+                  decoration:
+                      const InputDecoration(
+                          labelText: 'From'),
                   items: const [
-                    DropdownMenuItem(value: 'en', child: Text('English')),
-                    DropdownMenuItem(value: 'es', child: Text('Spanish')),
-                    DropdownMenuItem(value: 'fr', child: Text('French')),
-                    DropdownMenuItem(value: 'de', child: Text('German')),
-                    DropdownMenuItem(value: 'ig', child: Text('Igbo')),
-                    DropdownMenuItem(value: 'yo', child: Text('Yoruba')),
-                    DropdownMenuItem(value: 'iso', child: Text('Isoko')),
+                    DropdownMenuItem(
+                        value: 'en',
+                        child: Text('English')),
+                    DropdownMenuItem(
+                        value: 'es',
+                        child: Text('Spanish')),
+                    DropdownMenuItem(
+                        value: 'fr',
+                        child: Text('French')),
+                    DropdownMenuItem(
+                        value: 'de',
+                        child: Text('German')),
+                    DropdownMenuItem(
+                        value: 'ig',
+                        child: Text('Igbo')),
+                    DropdownMenuItem(
+                        value: 'yo',
+                        child: Text('Yoruba')),
+                    DropdownMenuItem(
+                        value: 'iso',
+                        child: Text('Isoko')),
                   ],
                 ),
               ),
@@ -276,22 +341,39 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
               const SizedBox(width: 16),
               // Target Language Dropdown
               Expanded(
-                child: DropdownButtonFormField<String>(
+                child: DropdownButtonFormField<
+                    String>(
                   value: _targetLanguage,
                   onChanged: (String? newValue) {
                     setState(() {
                       _targetLanguage = newValue!;
                     });
                   },
-                  decoration: const InputDecoration(labelText: 'To'),
+                  decoration:
+                      const InputDecoration(
+                          labelText: 'To'),
                   items: const [
-                    DropdownMenuItem(value: 'es', child: Text('Spanish')),
-                    DropdownMenuItem(value: 'en', child: Text('English')),
-                    DropdownMenuItem(value: 'fr', child: Text('French')),
-                    DropdownMenuItem(value: 'de', child: Text('German')),
-                    DropdownMenuItem(value: 'ig', child: Text('Igbo')),
-                    DropdownMenuItem(value: 'yo', child: Text('Yoruba')),
-                    DropdownMenuItem(value: 'iso', child: Text('Isoko')),
+                    DropdownMenuItem(
+                        value: 'es',
+                        child: Text('Spanish')),
+                    DropdownMenuItem(
+                        value: 'en',
+                        child: Text('English')),
+                    DropdownMenuItem(
+                        value: 'fr',
+                        child: Text('French')),
+                    DropdownMenuItem(
+                        value: 'de',
+                        child: Text('German')),
+                    DropdownMenuItem(
+                        value: 'ig',
+                        child: Text('Igbo')),
+                    DropdownMenuItem(
+                        value: 'yo',
+                        child: Text('Yoruba')),
+                    DropdownMenuItem(
+                        value: 'iso',
+                        child: Text('Isoko')),
                   ],
                 ),
               ),
@@ -306,8 +388,12 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
               labelText: 'Enter text',
               border: const OutlineInputBorder(),
               suffixIcon: IconButton(
-                icon: Icon(_isListening ? Icons.mic : Icons.mic_none),
-                onPressed: _isListening ? _stopListening : _startListening,
+                icon: Icon(_isListening
+                    ? Icons.mic
+                    : Icons.mic_none),
+                onPressed: _isListening
+                    ? _stopListening
+                    : _startListening,
               ),
             ),
           ),
@@ -322,10 +408,13 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
           if (_translatedText.isNotEmpty)
             Container(
               padding: const EdgeInsets.all(16),
-              margin: const EdgeInsets.only(top: 20),
+              margin:
+                  const EdgeInsets.only(top: 20),
               decoration: BoxDecoration(
-                color: Colors.blue[50], // Light background for readability
-                borderRadius: BorderRadius.circular(12),
+                color: Colors.blue[
+                    50], // Light background for readability
+                borderRadius:
+                    BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.shade300,
@@ -335,7 +424,8 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
                 ],
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
@@ -344,47 +434,67 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
                         child: Text(
                           _translatedText,
                           style: const TextStyle(
-                              fontSize: 16, color: Colors.black87),
+                              fontSize: 16,
+                              color:
+                                  Colors.black87),
                         ),
                       ),
                       // Text-to-Speech Button
                       IconButton(
-                        icon: const Icon(Icons.volume_up),
-                        onPressed: _speak,
+                        icon: const Icon(
+                            Icons.volume_up),
+                        onPressed: () {},
                       ),
                       // Favorite Button
                       IconButton(
                         icon: Icon(
                           Icons.star,
-                          color: _favorites.contains(_translatedText)
+                          color: _favorites.contains(
+                                  _translatedText)
                               ? Colors.yellow
                               : Colors.grey,
                         ),
-                        onPressed: _saveToFavorites,
+                        onPressed:
+                            _saveToFavorites,
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
                   // Actions Row: Copy, Share, Clear
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment:
+                        MainAxisAlignment
+                            .spaceAround,
                     children: [
                       TextButton.icon(
-                        icon: const Icon(Icons.copy, color: Colors.blue),
+                        icon: const Icon(
+                            Icons.copy,
+                            color: Colors.blue),
                         label: const Text('Copy',
-                            style: TextStyle(color: Colors.blue)),
-                        onPressed: _copyToClipboard,
+                            style: TextStyle(
+                                color:
+                                    Colors.blue)),
+                        onPressed:
+                            _copyToClipboard,
                       ),
                       TextButton.icon(
-                        icon: const Icon(Icons.share, color: Colors.blue),
+                        icon: const Icon(
+                            Icons.share,
+                            color: Colors.blue),
                         label: const Text('Share',
-                            style: TextStyle(color: Colors.blue)),
+                            style: TextStyle(
+                                color:
+                                    Colors.blue)),
                         onPressed: _shareText,
                       ),
                       TextButton.icon(
-                        icon: const Icon(Icons.clear, color: Colors.red),
+                        icon: const Icon(
+                            Icons.clear,
+                            color: Colors.red),
                         label: const Text('Clear',
-                            style: TextStyle(color: Colors.red)),
+                            style: TextStyle(
+                                color:
+                                    Colors.red)),
                         onPressed: _clearOutput,
                       ),
                     ],

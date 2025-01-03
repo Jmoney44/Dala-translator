@@ -11,13 +11,12 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Google Translator',
-      theme: ThemeData(
-        primarySwatch: Colors.orange,
-      ),
-      home: const TranslatorScreen(), 
+      // theme: ThemeData(
+      //   primarySwatch: Colors.orange,
+      // ),
+      home: TranslatorScreen(),
     );
   }
 }
