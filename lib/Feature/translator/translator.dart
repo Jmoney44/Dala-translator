@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:google/components/bottom_navbar.dart';
 import 'package:google/components/translated_card.dart';
 import 'package:google/constants/utils.dart';
@@ -29,16 +30,63 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
   List<String> _favorites = []; // List of favorite translations
 
   // API and Speech instances
-  // late FlutterTts flutterTts;
   late stt.SpeechToText _speech;
   // final String _apiKey = API_KEY;
+  late FlutterTts flutterTts;
 
   @override
   void initState() {
     super.initState();
-    // flutterTts = FlutterTts();
+    flutterTts = FlutterTts();
+    _initTts();
     _speech = stt.SpeechToText();
     _loadFavorites(); // Load saved favorites on start
+  }
+
+  Future<void> _initTts() async {
+    await flutterTts.setLanguage(_targetLanguage); // Set language based on target
+    await flutterTts.setSpeechRate(0.5); // Adjust speech rate (0.0 to 1.0)
+    await flutterTts.setVolume(1.0); // Set volume (0.0 to 1.0)
+    await flutterTts.setPitch(1.0); // Set pitch (0.0 to 2.0)
+  }
+
+  // Method to speak text
+  Future<void> _speakText() async {
+    if (_translatedText.isNotEmpty) {
+      await flutterTts.setLanguage(_targetLanguage); // Update language before speaking
+      await flutterTts.speak(_translatedText);
+    }
+  }
+
+  @override
+  void dispose() {
+    flutterTts.stop();
+    super.dispose();
+  }
+
+  Future<void> _setTargetLanguage(String newValue) async {
+    setState(() {
+      _targetLanguage = newValue;
+    });
+
+    try {
+      final isLanguageAvailable = await flutterTts.isLanguageAvailable(newValue);
+      if (isLanguageAvailable) {
+        await flutterTts.setLanguage(newValue);
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Language $newValue is not available for text-to-speech')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to set language: ${e.toString()}')),
+        );
+      }
+    }
   }
 
   // Translation API call
@@ -279,6 +327,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
               clearText: _clearOutput,
               shareText: _shareText,
               translatedText: _translatedText,
+              speakText: _speakText, // Add the speech callback
             ),
         ],
       ),

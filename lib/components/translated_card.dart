@@ -9,6 +9,7 @@ class TranslationCard extends StatelessWidget {
     required this.shareText,
     required this.clearText,
     required this.translatedText,
+    required this.speakText,
   });
 
   final Color starIconColor;
@@ -16,6 +17,7 @@ class TranslationCard extends StatelessWidget {
   final void Function() copyToClipboard;
   final void Function() shareText;
   final void Function() clearText;
+  final void Function() speakText;
   final String translatedText;
 
   @override
@@ -49,7 +51,7 @@ class TranslationCard extends StatelessWidget {
               // Text-to-Speech Button
               IconButton(
                 icon: const Icon(Icons.volume_up),
-                onPressed: () {},
+                onPressed: speakText,
               ),
               // Favorite Button
               IconButton(
