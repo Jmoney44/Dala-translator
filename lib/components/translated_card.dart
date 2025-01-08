@@ -6,7 +6,6 @@ class TranslationCard extends StatelessWidget {
     required this.starIconColor,
     required this.saveToFavorites,
     required this.copyToClipboard,
-    required this.shareText,
     required this.clearText,
     required this.translatedText,
     required this.speakText,
@@ -15,7 +14,6 @@ class TranslationCard extends StatelessWidget {
   final Color starIconColor;
   final void Function() saveToFavorites;
   final void Function() copyToClipboard;
-  final void Function() shareText;
   final void Function() clearText;
   final void Function() speakText;
   final String translatedText;
@@ -69,11 +67,6 @@ class TranslationCard extends StatelessWidget {
                 icon: const Icon(Icons.copy, color: Colors.blue),
                 label: const Text('Copy', style: TextStyle(color: Colors.blue)),
                 onPressed: copyToClipboard,
-              ),
-              TextButton.icon(
-                icon: const Icon(Icons.share, color: Colors.blue),
-                label: const Text('Share', style: TextStyle(color: Colors.blue)),
-                onPressed: shareText,
               ),
               TextButton.icon(
                 icon: const Icon(Icons.clear, color: Colors.red),

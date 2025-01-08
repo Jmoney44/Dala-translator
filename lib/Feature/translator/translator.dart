@@ -8,7 +8,6 @@ import 'package:google/components/bottom_navbar.dart';
 import 'package:google/components/translated_card.dart';
 import 'package:google/constants/utils.dart';
 import 'package:http/http.dart' as http;
-import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
@@ -191,16 +190,16 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
   }
 
   // Method to share translated text using native share dialog
-  void _shareText() {
-    if (_translatedText.isNotEmpty) {
-      Share.share(_translatedText, subject: 'Translation Result');
-    } else {
-      // Show a snack bar if there's no text to share
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No text to share')),
-      );
-    }
-  }
+  // void _shareText() {
+  //   if (_translatedText.isNotEmpty) {
+  //     Share.share(_translatedText, subject: 'Translation Result');
+  //   } else {
+  //     // Show a snack bar if there's no text to share
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text('No text to share')),
+  //     );
+  //   }
+  // }
 
   // Method to clear output
   void _clearOutput() {
@@ -326,7 +325,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
               saveToFavorites: _saveToFavorites,
               copyToClipboard: _copyToClipboard,
               clearText: _clearOutput,
-              shareText: _shareText,
+              // shareText: _shareText,
               translatedText: _translatedText,
               speakText: _speakText, // Add the speech callback
             ),
