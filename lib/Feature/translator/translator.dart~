@@ -91,6 +91,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
 
   // Translation API call
 
+
   Future<void> _translateText() async {
     final String inputText = _textController.text;
     if (inputText.isEmpty) return;

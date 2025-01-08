@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "271786984042",
+    "project_id": "dala-app-b4185",
+    "storage_bucket": "dala-app-b4185.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:271786984042:android:2cad99a858151589418013",
+        "android_client_info": {
+          "package_name": "com.example.dala_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2pgIlNoz7xAT3gsaY9k5OWO9WrXgnVG4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
