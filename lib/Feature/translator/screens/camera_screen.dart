@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google/components/bottom_navbar.dart';
 
 class CameraScreen extends StatelessWidget {
+  static const routeName = 'camera_Screen';
   const CameraScreen({super.key});
 
   @override

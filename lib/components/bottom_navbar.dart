@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:google/Feature/translator/translator.dart';
-import 'package:google/camera_screen.dart';
-import 'package:google/history_screen.dart';
-import 'package:google/settings_screen.dart';
+import 'package:google/Feature/community/screens/chat_screen.dart';
+import 'package:google/Feature/translator/screens/camera_screen.dart';
+import 'package:google/Feature/translator/screens/history_screen.dart';
+import 'package:google/Feature/translator/screens/translator.dart';
 
 class CustomNavigationBar extends StatefulWidget {
   final int currentIndex;
@@ -37,25 +37,25 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
           label: 'Camera',
         ),
         NavigationDestination(
-          selectedIcon: Icon(Icons.settings),
-          icon: Icon(Icons.settings),
-          label: 'Settings',
+          selectedIcon: Icon(Icons.chat_bubble_rounded),
+          icon: Icon(Icons.chat_bubble_outline_rounded),
+          label: 'Community',
         ),
       ],
       selectedIndex: widget.currentIndex,
       onDestinationSelected: (int index) {
         switch (index) {
           case 0:
-            Navigator.of(context).pushReplacement(createPageRoute(const TranslatorScreen()));
+            Navigator.pushNamed(context, TranslatorScreen.routeName);
             break;
           case 1:
-            Navigator.of(context).pushReplacement(createPageRoute(const HistoryScreen()));
+            Navigator.pushNamed(context, HistoryScreen.routeName);
             break;
           case 2:
-            Navigator.of(context).pushReplacement(createPageRoute(const CameraScreen()));
+            Navigator.pushNamed(context, CameraScreen.routeName);
             break;
           case 3:
-            Navigator.of(context).pushReplacement(createPageRoute(const SettingsScreen()));
+            Navigator.pushNamed(context, ChatScreen.routeName);
             break;
         }
       },

@@ -1,11 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:google/components/bottom_navbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'components/bottom_navbar.dart';
-
 class HistoryScreen extends StatefulWidget {
+  static const routeName = 'history_Screen';
   const HistoryScreen({super.key});
 
   @override

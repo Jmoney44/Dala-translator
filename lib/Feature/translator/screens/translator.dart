@@ -12,6 +12,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class TranslatorScreen extends StatefulWidget {
+  static const routeName = 'translator_Screen';
+
   const TranslatorScreen({super.key});
 
   @override

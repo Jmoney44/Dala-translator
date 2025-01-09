@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 
-import 'components/bottom_navbar.dart';
+class MainSettingsScreen extends StatelessWidget {
+  static const String routeName = 'main_settings_screen';
 
-class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+  const MainSettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      bottomNavigationBar: CustomNavigationBar(currentIndex: 3),
       body: Center(
         child: Text("Settings Screen"),
       ),
