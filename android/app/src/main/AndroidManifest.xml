@@ -2,9 +2,9 @@
     package="com.example.dala_app">
 
     <application
-        android:label="google"
+        android:label="Dala"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"

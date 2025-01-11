@@ -14,10 +14,10 @@ class ChatScreen extends StatelessWidget {
     return Scaffold(
       bottomNavigationBar: const CustomNavigationBar(currentIndex: 3),
       appBar: AppBar(
-        title: Text('Chat Rooms'),
+        title: const Text('Chat Rooms'),
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () => _showCreateRoomDialog(context),
           ),
         ],
@@ -40,7 +40,6 @@ class ChatScreen extends StatelessWidget {
 
               return ListTile(
                 title: Text(room.name),
-                subtitle: Text('Created by: ${room.creatorId}'),
                 trailing: Text('${room.members.length} members'),
                 onTap: () => _joinRoom(context, room),
               );
@@ -83,7 +82,9 @@ class ChatScreen extends StatelessWidget {
 
                 await FirebaseFirestore.instance.collection('chatRooms').doc(room.id).set(room.toMap());
 
-                Navigator.pop(context);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
               }
             },
             child: const Text('Create'),
@@ -102,11 +103,13 @@ class ChatScreen extends StatelessWidget {
     }
 
     // Navigate to chat room screen
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ChatRoomScreen(roomId: room.id),
-      ),
-    );
+    if (context.mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChatRoomScreen(roomId: room.id),
+        ),
+      );
+    }
   }
 }
